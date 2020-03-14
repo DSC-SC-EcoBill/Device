@@ -26,11 +26,11 @@ class MainWindowClass(QMainWindow, main_class):
         qPixmapVar = QPixmap()
         qPixmapVar.load('qrcodes/blank.jpg')
         self.QRcode_IMG.setPixmap(qPixmapVar)
+        self.Receipt_IMG.setPixmap(qPixmapVar)
 
         # 기능 btn 관리
         btn_do = {
             self.btn_charge.clicked.connect(self.charge),
-            self.btn_print.clicked.connect(self.print_receipt),
             self.btn_clear.clicked.connect(self.clearList),
         }
 
@@ -75,26 +75,24 @@ class MainWindowClass(QMainWindow, main_class):
     # 기능 btn
     # 결제 버튼
     def charge(self):
-        print('charge')
-        for _ in range(len(self.items_name)):
-            print(self.items_name[_])
-            print(self.items_price[_])
+        # 영수증 이미지 생성
+        fun.receipt_generator(self.total_amount, self.items_name, self.items_price)
+        qPixmapVar = QPixmap()
+        qPixmapVar.load('receipts/receipt.jpg')
+        self.Receipt_IMG.setPixmap(qPixmapVar)
+        self.Receipt_IMG.repaint()
 
         # QR code 생성 및 저장
         qr_url = 'naver.com'
         qr_name = 'naver'
         fun.qrcode_generator(qr_url, qr_name)
-        print('qr 생성 ')
 
         # QR code 이미지 불러오기
         qPixmapVar = QPixmap()
         qPixmapVar.load('qrcodes/{}.jpg'.format(qr_name))
+        qPixmapVar.scaled(200, 200)
         self.QRcode_IMG.setPixmap(qPixmapVar)
         self.QRcode_IMG.repaint()
-
-    # 영수증 프린트 버튼
-    def print_receipt(self):
-        print('print_receipt')
 
     # 리스트, lcd number clear
     def clearList(self):
@@ -111,14 +109,18 @@ class MainWindowClass(QMainWindow, main_class):
 
     # 리스트에 선택한 항목과 금액을 올리고, lcd에 금액 출력
     def add_amount(self, item):
+        # 리스트 위젯에 추가
         self.selected_items_name.addItem(item.name)
         self.selected_items_price.addItem(str(item.price))
 
+        # 아이템과 가격을 저장하는 list에 저장
         self.items_name.append(item.name)
         self.items_price.append(item.price)
 
+        # 최 금액 저장종
         self.total_amount = self.total_amount + item.price
 
+        # lcd창에 최종금액 출력
         self.show_amount.display(self.total_amount)
         self.show_amount.repaint()
 
