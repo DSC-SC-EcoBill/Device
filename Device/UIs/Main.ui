@@ -419,7 +419,7 @@
       </rect>
      </property>
      <property name="value" stdset="0">
-      <double>50000.000000000000000</double>
+      <double>0.000000000000000</double>
      </property>
     </widget>
     <widget class="QLabel" name="label_7">
