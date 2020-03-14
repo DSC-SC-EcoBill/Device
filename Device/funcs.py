@@ -1,6 +1,44 @@
 import qrcode
+from PIL import Image, ImageDraw
 
-# QR코드 생성기 
+
+# 영수증 이미지 생성
+def receipt_generator(total_amount, items, prices):
+    # 영수증 내용 작성
+    receipt_start = '''
+    DSC Sahmyook StarBooks
+    Address : 815, Hwarang-ro, Nowon-gu, Seoul
+    TEL : (02)3399-3636
+    ------------------------------------------
+    Items                           Price  
+    '''
+
+    # item 목록 작성
+    receipt_body = [receipt_start, ]
+    for _ in range(len(items)):
+        receipt_body.append('''
+    {0:<28}    {1}
+        '''.format(items[_], prices[_]))
+
+    receipt_end = '''
+    ------------------------------------------
+    Total                           {} won
+    ------------------------------------------
+                    Thank you!
+    '''.format(total_amount)
+    receipt_body.append(receipt_end)
+
+    # 영수증 내용 합치기
+    receipt_result = ''.join(receipt_body)
+
+    # Image 생성
+    img = Image.new('RGB', size=(300, 311), color='White')
+    d = ImageDraw.Draw(img)
+    d.text((0, 0), receipt_result, fill='black', spacing=0)
+    img.save('receipts/receipt.jpg')
+
+
+# QR코드 생성
 def qrcode_generator(url, imgname):
     qr = qrcode.QRCode(
         version=2,
