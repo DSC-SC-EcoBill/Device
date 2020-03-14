@@ -10,16 +10,28 @@ import Items as it
 # UIs
 main_class = uic.loadUiType('UIs/Main.ui')[0]  # 메인창
 
+
 # Main
 class MainWindowClass(QMainWindow, main_class):
+
+    total_amount = 0    # 전체 결제 금액
+    items_name = []     # 선택한 메뉴들
+    items_price = []    # 선택한 메뉴들의 금액
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
+        # QRcode_IMG를 Default한 이미지로 변경
+        qPixmapVar = QPixmap()
+        qPixmapVar.load('qrcodes/blank.jpg')
+        self.QRcode_IMG.setPixmap(qPixmapVar)
 
         # 기능 btn 관리
         btn_do = {
             self.btn_charge.clicked.connect(self.charge),
             self.btn_print.clicked.connect(self.print_receipt),
+            self.btn_clear.clicked.connect(self.clearList),
         }
 
         # 메뉴 btn 관리
@@ -64,16 +76,51 @@ class MainWindowClass(QMainWindow, main_class):
     # 결제 버튼
     def charge(self):
         print('charge')
+        for _ in range(len(self.items_name)):
+            print(self.items_name[_])
+            print(self.items_price[_])
+
+        # QR code 생성 및 저장
+        qr_url = 'naver.com'
+        qr_name = 'naver'
+        fun.qrcode_generator(qr_url, qr_name)
+        print('qr 생성 ')
+
+        # QR code 이미지 불러오기
+        qPixmapVar = QPixmap()
+        qPixmapVar.load('qrcodes/{}.jpg'.format(qr_name))
+        self.QRcode_IMG.setPixmap(qPixmapVar)
+        self.QRcode_IMG.repaint()
 
     # 영수증 프린트 버튼
     def print_receipt(self):
         print('print_receipt')
 
-    def add_amount(self, item):
-        print(item.name)
-        print(item.price)
-        self.selected_items.addItem(item.name)
+    # 리스트, lcd number clear
+    def clearList(self):
+        self.selected_items_name.clear()
+        self.selected_items_price.clear()
 
+        self.items_name.clear()
+        self.items_price.clear()
+
+        self.total_amount = 0
+
+        self.show_amount.display(self.total_amount)
+        self.show_amount.repaint()
+
+    # 리스트에 선택한 항목과 금액을 올리고, lcd에 금액 출력
+    def add_amount(self, item):
+        self.selected_items_name.addItem(item.name)
+        self.selected_items_price.addItem(str(item.price))
+
+        self.items_name.append(item.name)
+        self.items_price.append(item.price)
+
+        self.total_amount = self.total_amount + item.price
+
+        self.show_amount.display(self.total_amount)
+        self.show_amount.repaint()
 
 
 if __name__ == '__main__':
