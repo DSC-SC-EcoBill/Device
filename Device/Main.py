@@ -78,12 +78,15 @@ class MainWindowClass(QMainWindow, main_class):
         # 영수증 이미지 생성
         fun.receipt_generator(self.total_amount, self.items_name, self.items_price)
         qPixmapVar = QPixmap()
-        qPixmapVar.load('receipts/receipt.jpg')
+        receipt_img = 'receipts/receipt.jpg'
+        qPixmapVar.load(receipt_img)
         self.Receipt_IMG.setPixmap(qPixmapVar)
         self.Receipt_IMG.repaint()
 
+        # api에 영수증 업로드
+        qr_url = fun.upload_receipt(receipt_img)
+
         # QR code 생성 및 저장
-        qr_url = 'naver.com'
         qr_name = 'naver'
         fun.qrcode_generator(qr_url, qr_name)
 
