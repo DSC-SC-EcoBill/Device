@@ -1,2 +1,4 @@
 Device/__pycache__/
 Device/.idea/
+Device/qrcodes/
+Device/receipts/
