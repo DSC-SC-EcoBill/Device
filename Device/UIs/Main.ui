@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>DSC_SolutionChallenge_EReceipt_Device</string>
   </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QFrame" name="Item_List">
     <property name="geometry">
@@ -358,8 +361,8 @@
     <widget class="QPushButton" name="btn_charge">
      <property name="geometry">
       <rect>
-       <x>720</x>
-       <y>160</y>
+       <x>710</x>
+       <y>140</y>
        <width>211</width>
        <height>32</height>
       </rect>
@@ -371,8 +374,8 @@
     <widget class="QPushButton" name="btn_print">
      <property name="geometry">
       <rect>
-       <x>720</x>
-       <y>210</y>
+       <x>710</x>
+       <y>180</y>
        <width>211</width>
        <height>32</height>
       </rect>
@@ -384,8 +387,8 @@
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
-       <x>720</x>
-       <y>40</y>
+       <x>710</x>
+       <y>20</y>
        <width>221</width>
        <height>31</height>
       </rect>
@@ -402,21 +405,32 @@
     <widget class="QLCDNumber" name="show_amount">
      <property name="geometry">
       <rect>
-       <x>720</x>
-       <y>80</y>
+       <x>710</x>
+       <y>60</y>
        <width>141</width>
        <height>51</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="digitCount">
+      <number>6</number>
+     </property>
      <property name="value" stdset="0">
       <double>0.000000000000000</double>
+     </property>
+     <property name="intValue" stdset="0">
+      <number>0</number>
      </property>
     </widget>
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>870</x>
-       <y>100</y>
+       <x>860</x>
+       <y>80</y>
        <width>41</width>
        <height>31</height>
       </rect>
@@ -430,14 +444,47 @@
       <string>₩</string>
      </property>
     </widget>
-    <widget class="QListWidget" name="selected_items">
+    <widget class="QListWidget" name="selected_items_name">
      <property name="geometry">
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>681</width>
-       <height>241</height>
+       <width>411</width>
+       <height>231</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>18</pointsize>
+      </font>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="selected_items_price">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>20</y>
+       <width>261</width>
+       <height>231</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>18</pointsize>
+      </font>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_clear">
+     <property name="geometry">
+      <rect>
+       <x>710</x>
+       <y>220</y>
+       <width>211</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Clear</string>
      </property>
     </widget>
    </widget>
@@ -456,16 +503,6 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QGraphicsView" name="QRcode_IMG">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>50</y>
-       <width>200</width>
-       <height>200</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QLabel" name="QR">
      <property name="geometry">
       <rect>
@@ -516,6 +553,25 @@
        <width>200</width>
        <height>281</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="QRcode_IMG">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>50</y>
+       <width>200</width>
+       <height>200</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </widget>
