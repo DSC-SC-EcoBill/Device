@@ -41,16 +41,19 @@ def receipt_generator(total_amount, items, prices):
 
 # QR코드 생성
 def qrcode_generator(url, imgname):
-    qr = qrcode.QRCode(
-        version=2,
-        error_correction=qrcode.constants.ERROR_CORRECT_H,
-        box_size=7,
-        border=2
-    )
-    qr.add_data(url)
-    qr.make()
-    img = qr.make_image(fill_color='black', back_color='white')
-    img.save('qrcodes/{}.jpg'.format(imgname))
+    if url is not None:
+        qr = qrcode.QRCode(
+            version=2,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=7,
+            border=2
+        )
+        qr.add_data(url)
+        qr.make()
+        img = qr.make_image(fill_color='black', back_color='white')
+        img.save('qrcodes/{}.jpg'.format(imgname))
+    else:
+        print(url)
 
 
 # API에 영수증 이미지 업로드
@@ -67,7 +70,7 @@ def upload_receipt(receipt_img):
 
         qr_url = res.json()
         return qr_url
-    
+
     except Exception as ex:
         print('야 API에 영수증 올리다 에러났다 ㅠㅠ ', ex)
 
