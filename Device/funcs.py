@@ -7,7 +7,7 @@ import requests
 def receipt_generator(total_amount, items, prices):
     # 영수증 내용 작성
     receipt_start = '''
-    DSC Sahmyook StarBooks
+            DSC Sahmyook Doyoubucks
     Address : 815, Hwarang-ro, Nowon-gu, Seoul
     TEL : (02)3399-3636
     ------------------------------------------
