@@ -1,6 +1,7 @@
 import qrcode
 from PIL import Image, ImageDraw
 import requests
+import datetime
 
 
 # 영수증 이미지 생성
@@ -59,12 +60,21 @@ def qrcode_generator(url, imgname):
 # API에 영수증 이미지 업로드
 def upload_receipt(receipt_img):
     try:
-        upload_url = 'http://127.0.0.1:8000/api/main/upload_receipt/'
+        upload_url = 'http://127.0.0.1:8000/api/main/upload_img/'
 
         files = open(receipt_img, 'rb')
         upload = {'file': files}
+        now = datetime.datetime.now()
+        image_name = '{}{}{}_{}{}{}'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
 
-        res = requests.post(upload_url, files=upload)
+        headers = {'Contest-Type': 'multipart/form-data'}
+        data = {'device_id': 'ABC123', 'image_name': image_name}
+        res = requests.post(
+            upload_url,
+            headers=headers,
+            data=data,
+            files=upload
+        )
         # res = requests.post(upload_url)
         print(res.json())
 
@@ -73,5 +83,6 @@ def upload_receipt(receipt_img):
 
     except Exception as ex:
         print('야 API에 영수증 올리다 에러났다 ㅠㅠ ', ex)
+
 
 
