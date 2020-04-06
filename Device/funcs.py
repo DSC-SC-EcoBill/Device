@@ -2,6 +2,8 @@ import qrcode
 from PIL import Image, ImageDraw
 import requests
 import datetime
+from google.cloud import storage
+device_id = 'ABC123'
 
 
 # 영수증 이미지 생성
@@ -57,32 +59,78 @@ def qrcode_generator(url, imgname):
         print(url)
 
 
-# API에 영수증 이미지 업로드
-def upload_receipt(receipt_img):
+# 영수증 이미지를 gcs에 올리고 링크를 받아 API서버에 튜플 생성을 요청하고, qrcode로 생성할 url을 받아온다
+def upload_receipt_data(receipt_img):
     try:
-        upload_url = 'http://127.0.0.1:8000/api/main/upload_img/'
-
-        files = open(receipt_img, 'rb')
-        upload = {'file': files}
         now = datetime.datetime.now()
-        image_name = '{}{}{}_{}{}{}'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
+        image_name = '{}_{}{}{}_{}{}{}'.format(device_id, now.year, now.month, now.day, now.hour, now.minute, now.second)
+        file_name = open(receipt_img, 'rb')                           # 업로드할 이미지의 파일 객체
+        blob_name = 'receipts/{}.jpg'.format(image_name)  # 업로드할 이미지의 gcs 경로
 
-        headers = {'Contest-Type': 'multipart/form-data'}
-        data = {'device_id': 'ABC123', 'image_name': image_name}
+        # gcs에 이미지 업로드 요청
+        try:
+            upload_file_gcs(file_name, blob_name)
+        except Exception as ex:
+            print('Hey! upload: ', ex)
+
+        # gcs에 저장된 이미지의 link url 반환 요청
+        try:
+            link_url = get_linkurl_gcs(blob_name)
+            print(link_url)
+        except Exception as ex:
+            print('Hey!: return', ex)
+    except Exception as ex:
+        print('Hey!: ', ex)
+
+    try:
+        upload_url = 'http://dsc-ereceipt.appspot.com/api/main/upload_img/'
+        headers = {'Contest-Type': 'application/json'}
+        data = {
+           "receipt_img_url": link_url,
+            "device_id": device_id
+        }
         res = requests.post(
             upload_url,
             headers=headers,
-            data=data,
-            files=upload
+            data=data
         )
-        # res = requests.post(upload_url)
-        print(res.json())
-
-        qr_url = res.json()
-        return qr_url
-
+        print(res.status_code, res.text)
+        return res.text[1:-1]
     except Exception as ex:
-        print('야 API에 영수증 올리다 에러났다 ㅠㅠ ', ex)
+        print('Hey!: ', ex)
+
+
+# 스토리지 파일 업로드 함수
+def upload_file_gcs(file_name, destination_blob_name, bucket_name='dsc_ereceipt_storage'):
+    # file_name : 업로드할 파일명
+    # destination_blob_name : 업로드될 경로와 파일명
+    # bucket_name : 업로드할 버킷명
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_file(file_name)
+
+    print(
+        "File {} uploaded to {}".format(
+            file_name, destination_blob_name
+        )
+    )
+
+
+# 스토리지에 업로드된 파일의 링크url을 가져오는 함수
+def get_linkurl_gcs(blob_name, bucket_name='dsc_ereceipt_storage'):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    print(
+        "Blob {}'s url : {}".format(
+            blob_name, blob.public_url
+        )
+    )
+
+    return blob.public_url
 
 
 
