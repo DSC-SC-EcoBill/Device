@@ -4,8 +4,9 @@ from PyQt5 import uic
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-import funcs as fun
+# import funcs as fun
 import Items as it
+import funcs as fun
 
 # UIs
 main_class = uic.loadUiType('UIs/Main.ui')[0]  # 메인창
@@ -23,10 +24,12 @@ class MainWindowClass(QMainWindow, main_class):
         self.setupUi(self)
 
         # QRcode_IMG를 Default한 이미지로 변경
-        qPixmapVar = QPixmap()
-        qPixmapVar.load('qrcodes/blank.jpg')
-        self.QRcode_IMG.setPixmap(qPixmapVar)
-        self.Receipt_IMG.setPixmap(qPixmapVar)
+        self.qPixmapVar_qr = QPixmap()
+        self.qPixmapVar_re = QPixmap()
+        self.qPixmapVar_qr.load('qrcodes/blank.jpg')
+        self.qPixmapVar_re.load('qrcodes/blank.jpg')
+        self.QRcode_IMG.setPixmap(self.qPixmapVar_qr)
+        self.Receipt_IMG.setPixmap(self.qPixmapVar_re)
 
         # 기능 btn 관리
         btn_do = {
@@ -77,25 +80,26 @@ class MainWindowClass(QMainWindow, main_class):
     def charge(self):
         # 영수증 이미지 생성
         fun.receipt_generator(self.total_amount, self.items_name, self.items_price)
-        qPixmapVar = QPixmap()
-        receipt_img = 'receipts/receipt.jpg'
-        qPixmapVar.load(receipt_img)
-        self.Receipt_IMG.setPixmap(qPixmapVar)
-        self.Receipt_IMG.repaint()
+        # qPixmapVar_re = QPixmap()
+        self.qPixmapVar_re.load('receipts/receipt.jpg')
+        self.qPixmapVar_re.scaled(10, 10)
+        self.Receipt_IMG.setPixmap(self.qPixmapVar_re)
+        # self.Receipt_IMG.repaint()
 
-        # api에 영수증 업로드
-        qr_url = fun.upload_receipt_data(receipt_img)
+        # # api에 영수증 업로드
+        qr_url = fun.upload_receipt_data() # 서버에 이미지 & 정보 request
+        # qr_url = 'gs://dsc_ereceipt_storage/receipts/Doyoubucks_20201125_5378.jpg'
 
-        # QR code 생성 및 저장
-        qr_name = 'test'
-        fun.qrcode_generator(qr_url, qr_name)
+        # # QR code 생성 및 저장
+        fun.qrcode_generator(qr_url)
 
         # QR code 이미지 불러오기
-        qPixmapVar = QPixmap()
-        qPixmapVar.load('qrcodes/{}.jpg'.format(qr_name))
-        qPixmapVar.scaled(200, 200)
-        self.QRcode_IMG.setPixmap(qPixmapVar)
+        # qPixmapVar_qr = QPixmap()
+        self.qPixmapVar_qr.load('qrcodes/qrcode.png')
+        self.qPixmapVar_qr.scaled(10, 10)
+        self.QRcode_IMG.setPixmap(self.qPixmapVar_qr)
         self.QRcode_IMG.repaint()
+
 
     # 리스트, lcd number clear
     def clearList(self):

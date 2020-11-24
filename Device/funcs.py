@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw
 import requests
 import datetime
 from google.cloud import storage
-device_id = 'ABC123'
+device_id = 'Doyoubucks'
 
 
 # 영수증 이미지 생성
@@ -43,28 +43,29 @@ def receipt_generator(total_amount, items, prices):
 
 
 # QR코드 생성
-def qrcode_generator(url, imgname):
+def qrcode_generator(url):
     if url is not None:
         qr = qrcode.QRCode(
-            version=2,
+            version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_H,
-            box_size=7,
+            box_size=4,
             border=2
         )
         qr.add_data(url)
         qr.make()
         img = qr.make_image(fill_color='black', back_color='white')
-        img.save('qrcodes/{}.jpg'.format(imgname))
+        img.save('qrcodes/qrcode.png')
     else:
         print(url)
 
 
 # 영수증 이미지를 gcs에 올리고 링크를 받아 API서버에 튜플 생성을 요청하고, qrcode로 생성할 url을 받아온다
-def upload_receipt_data(receipt_img):
+def upload_receipt_data():
     try:
         now = datetime.datetime.now()
         image_name = '{}_{}{}{}_{}{}{}'.format(device_id, now.year, now.month, now.day, now.hour, now.minute, now.second)
-        file_name = open(receipt_img, 'rb')                           # 업로드할 이미지의 파일 객체
+        # file_name = open(receipt_img, 'rb')                           # 업로드할 이미지의 파일 객체
+        file_name = 'receipts/receipt.jpg'
         blob_name = 'receipts/{}.jpg'.format(image_name)  # 업로드할 이미지의 gcs 경로
 
         # gcs에 이미지 업로드 요청
@@ -75,18 +76,21 @@ def upload_receipt_data(receipt_img):
 
         # gcs에 저장된 이미지의 link url 반환 요청
         try:
-            link_url = get_linkurl_gcs(blob_name)
-            print(link_url)
+            link_url, uri = get_linkurl_gcs(blob_name)
+            print(link_url, uri)
         except Exception as ex:
-            print('Hey!: return', ex)
+            print('Hey!: url and uri', ex)
+
     except Exception as ex:
         print('Hey!: ', ex)
 
     try:
-        upload_url = 'http://dsc-ereceipt.appspot.com/api/main/upload_img/'
+        upload_url = 'http://dsc-receipt.du.r.appspot.com/api/main/upload_img/'
+        # upload_url = 'http://127.0.0.1:8000/api/main/upload_img/'
         headers = {'Contest-Type': 'application/json'}
         data = {
-           "receipt_img_url": link_url,
+            "receipt_img_url": link_url,
+            "receipt_img_uri": uri,
             "device_id": device_id
         }
         res = requests.post(
@@ -106,10 +110,11 @@ def upload_file_gcs(file_name, destination_blob_name, bucket_name='dsc_ereceipt_
     # destination_blob_name : 업로드될 경로와 파일명
     # bucket_name : 업로드할 버킷명
     storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_name)
+    # bucket = storage_client.get_bucket(bucket_name)
+    bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
-    blob.upload_from_file(file_name)
+    blob.upload_from_filename(file_name)
 
     print(
         "File {} uploaded to {}".format(
@@ -130,7 +135,7 @@ def get_linkurl_gcs(blob_name, bucket_name='dsc_ereceipt_storage'):
         )
     )
 
-    return blob.public_url
+    return blob.public_url, 'gs:/'+blob.public_url[30:]
 
-
-
+# upload_file_gcs('receipts/receipt.jpg', 'test.jpg')
+# qrcode_generator('test')

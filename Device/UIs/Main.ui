@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
+    <width>1281</width>
     <height>641</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>DSC_SolutionChallenge_EReceipt_Device</string>
+   <string>EcoBill_Device</string>
   </property>
   <property name="tabShape">
    <enum>QTabWidget::Rounded</enum>
@@ -519,8 +519,8 @@
       <rect>
        <x>50</x>
        <y>50</y>
-       <width>200</width>
-       <height>200</height>
+       <width>211</width>
+       <height>211</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -568,8 +568,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1280</width>
-     <height>22</height>
+     <width>1281</width>
+     <height>24</height>
     </rect>
    </property>
   </widget>
